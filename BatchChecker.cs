@@ -49,8 +49,9 @@ public class BatchChecker
             IndexName = "StatusIndex",
             KeyExpression = new Expression
             {
-                ExpressionStatement = "status = :status",
-                ExpressionAttributeValues = new() { { ":status", "Waiting" } }
+                ExpressionStatement = "#batch_status = :status",
+                ExpressionAttributeValues = new() { { ":status", "Waiting" } },
+                ExpressionAttributeNames = new() { { "#batch_status", "status" } }
             }
         };
 
