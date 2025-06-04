@@ -4,6 +4,7 @@ using Amazon.Lambda.Core;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using WordList.Common.Json;
+using WordList.Common.Messages;
 using WordList.Common.OpenAI;
 using WordList.Processing.CheckBatches.Models;
 
@@ -103,28 +104,28 @@ public class BatchChecker
         }
     }
 
-    private string? TrySerialize(Batch batch)
+    private string? TrySerialize(UpdateBatchMessage message)
     {
         try
         {
-            return JsonHelpers.Serialize(batch, LambdaFunctionJsonSerializerContext.Default.Batch);
+            return JsonHelpers.Serialize(message, LambdaFunctionJsonSerializerContext.Default.UpdateBatchMessage);
         }
         catch (Exception ex)
         {
-            Logger.LogError($"[{batch.Id} Failed to serialise batch: {ex.Message}");
+            Logger.LogError($"[{message.BatchId} Failed to serialise message: {ex.Message}");
             return null;
         }
     }
 
-    private async Task SendUpdateMessageBatchAsync(Batch[] batches)
+    private async Task SendUpdateMessageBatchAsync(UpdateBatchMessage[] messages)
     {
-        Logger.LogInformation($"Waiting to send a batch of {batches.Length} update message(s)");
+        Logger.LogInformation($"Waiting to send a batch of {messages.Length} update message(s)");
         await _messageSendingLimiter.WaitAsync().ConfigureAwait(false);
         try
         {
-            Logger.LogInformation($"Sending a batch of {batches.Length} update message(s)");
+            Logger.LogInformation($"Sending a batch of {messages.Length} update message(s)");
 
-            var entryMap = batches
+            var entryMap = messages
                 .Select(TrySerialize)
                 .Where(text => text is not null)
                 .Select(text => new SendMessageBatchRequestEntry(Guid.NewGuid().ToString(), text))
@@ -172,7 +173,10 @@ public class BatchChecker
         var results = await Task.WhenAll(checkBatchTasks).ConfigureAwait(false);
         Logger.LogInformation("All tasks completed");
 
-        var batches = results.OfType<Batch>().ToArray();
+        var batches = results
+            .OfType<Batch>()
+            .Select(batch => new UpdateBatchMessage { BatchId = batch.Id })
+            .ToArray();
 
         Logger.LogInformation($"Retrieved {batches.Length} batch(es) to update");
 

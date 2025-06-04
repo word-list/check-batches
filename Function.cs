@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using WordList.Common.Messages;
 using WordList.Processing.CheckBatches.Models;
 
 namespace WordList.Processing.CheckBatches;
@@ -34,6 +35,7 @@ public class Function
 
 [JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(Batch))]
+[JsonSerializable(typeof(UpdateBatchMessage))]
 public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
 {
 }
