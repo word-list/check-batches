@@ -55,7 +55,7 @@ public class BatchChecker
             }
         };
 
-        var result = await s_db.FromQueryAsync<Batch>(query).GetRemainingAsync().ConfigureAwait(false);
+        var result = await s_db.FromQueryAsync<Batch>(query, new FromQueryConfig { OverrideTableName = BatchesTableName }).GetRemainingAsync().ConfigureAwait(false);
 
         Logger.LogInformation($"Retrieved {result.Count} waiting batches");
 
