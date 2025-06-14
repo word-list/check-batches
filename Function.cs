@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using WordList.Common.Messages;
 using WordList.Processing.CheckBatches.Models;
 
 namespace WordList.Processing.CheckBatches;
@@ -11,15 +10,14 @@ public class Function
 {
     public static async Task<string> FunctionHandler(ILambdaContext context)
     {
-        context.Logger.LogInformation("Entering CheckBatches FunctionHandler");
+        var log = new LambdaContextLogger(context);
 
-        var updateBatchQueueUrl = Environment.GetEnvironmentVariable("UPDATE_BATCH_QUEUE_URL")
-            ?? throw new Exception("UPDATE_BATCH_QUEUE_URL must be set");
+        log.Info("Entering CheckBatches FunctionHandler");
 
-        var batchChecker = new BatchChecker(context.Logger, updateBatchQueueUrl);
+        var batchChecker = new BatchChecker(log);
         await batchChecker.CheckBatchesAsync().ConfigureAwait(false);
 
-        context.Logger.LogInformation("Exiting CheckBatches FunctionHandler");
+        log.Info("Exiting CheckBatches FunctionHandler");
 
         return "ok";
     }
@@ -35,7 +33,6 @@ public class Function
 
 [JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(Batch))]
-[JsonSerializable(typeof(UpdateBatchMessage))]
 public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
 {
 }
