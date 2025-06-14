@@ -31,11 +31,10 @@ When the `check-batches` lambda runs, it fetches details of the LLM batches wait
 
 The lambda uses the following environment variables:
 
-| Variable Name      | Description                                              |
-|--------------------|----------------------------------------------------------|
-| BATCHES_TABLE_NAME | Name of the table batch information is stored in.        |
-| OPENAI_API_KEY     | API key for accessing the OpenAI API.                    |
-| OPENAI_MODEL_NAME  | Name of the OpenAI model being used.                     |
+| Variable Name           | Description                                         |
+|-------------------------|-----------------------------------------------------|
+| BATCHES_TABLE_NAME      | Name of the table batch information is stored in.   |
+| OPENAI_API_KEY          | API key for accessing the OpenAI API.               |
 | UPDATE_BATCH_QUEUE_NAME | Name of the batch to send update batch messages to. |
 
 ## Common Packages
