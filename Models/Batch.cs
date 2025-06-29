@@ -19,5 +19,8 @@ public class Batch
 
     [DynamoDBProperty("error_message")]
     public string? ErrorMessage { get; set; }
+
+    [DynamoDBProperty("correlation_id")]
+    public string? CorrelationId { get; set; }
 }
 

@@ -1,9 +1,6 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.Lambda.Core;
 using Amazon.SQS;
-using Amazon.SQS.Model;
-using WordList.Common.Json;
 using WordList.Common.Logging;
 using WordList.Common.Messaging;
 using WordList.Common.Messaging.Messages;
@@ -120,7 +117,7 @@ public class BatchChecker
 
         var batches = results
             .OfType<Batch>()
-            .Select(batch => new UpdateBatchMessage { BatchId = batch.Id })
+            .Select(batch => new UpdateBatchMessage { BatchId = batch.Id, CorrelationId = batch.CorrelationId })
             .ToArray();
 
         Log.Info($"Retrieved {batches.Length} batch(es) to update");
